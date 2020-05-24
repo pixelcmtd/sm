@@ -1,0 +1,20 @@
+all
+{
+        %CC sm src/*.c
+}
+
+clean
+{
+        !rm -f sm
+}
+
+install root (all)
+{
+        !cp -f sm /usr/bin/sm
+}
+
+debug
+{
+        %SET CFLAGS -Og -Wall -pedantic -Wextra -fsanitize=address
+        %CC sm src/*.c
+}
