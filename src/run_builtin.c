@@ -17,7 +17,7 @@
 #define SETNAME(s, var) else if(!strcmp(name, s)) _SET(var, args)
 #define SETNAMEEND      else printf("Not setting unrecognized variable \"%s\".\n", name)
 
-inline int first_index_of(char *s, char c)
+static inline int first_index_of(char *s, char c)
 {
         for(int i = 0; s[i]; i++)
                 if(s[i] == c)

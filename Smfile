@@ -10,7 +10,7 @@ clean
 
 install root (all)
 {
-        !cp -f sm /usr/bin/sm
+        !cp -f sm /usr/local/bin/sm
 }
 
 debug

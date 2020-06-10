@@ -1,9 +1,8 @@
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <linux/limits.h>
 #include <string.h>
 #include <errno.h>
+#include "getcwd.h"
 
 char *append_smfile(char *c)
 {

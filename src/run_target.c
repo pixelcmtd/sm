@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <linux/limits.h>
 #include "run_command.h"
 #include "system.h"
 
