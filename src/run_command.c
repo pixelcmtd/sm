@@ -9,6 +9,7 @@ void run_command(int modifier, char *cmd)
         {
                 case '%': run_builtin(cmd); break;
                 case '!': SYSTEM(cmd); break;
+                case '#': break;
                 default : printf("Omitting command \"%s\" with unknown modifier %c.\n", cmd, modifier); break;
         }
 }
