@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include "run_command.h"
 #include "system.h"
@@ -34,12 +35,12 @@ void run_target(char *smfile, char *target, char *argv0)
                 if(SON(c)) continue;
 		char *d = bfr;
                 *d++ = c;
-                // read the target name
+                /* read the target name */
 		READ_WHILE(!SON(c) && c != '{' && c != '(') *d++ = c;
 		*d = '\0';
-		if(strcmp(bfr, target)) // target != this one
+		if(strcmp(bfr, target)) /* target != this one */
                 {
-                        // skip all of this
+                        /* skip the whole code block */
                         READ_WHILE(c != '}');
                         continue;
                 }
@@ -73,7 +74,7 @@ deps:
                 }
                 READ_WHILE(c != '{');
 execute:
-                //execute the code
+                /* execute the code */
                 READ_WHILE(c != '}')
                 {
                         if(SON(c)) continue;

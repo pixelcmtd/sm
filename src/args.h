@@ -1,9 +1,14 @@
 #include <string.h>
 
-#define ARGSTART bool inargs = 1; \
-        for(int i = 1; i < argc; i++) { \
-                if(!strcmp(argv[i], "--")) inargs = 0
+#define MAINSTART int _args_inargs, _args_argc_i;
+
+#define ARGSTART for(_args_argc_i = 1; \
+                     _args_argc_i < argc; \
+                     _args_argc_i++) { \
+                         if(!strcmp(argv[_args_argc_i], "--")) \
+                                 _args_inargs = 0
 #define ARG(unix, gnu) \
-                else if(inargs && (!strcmp(argv[i], "-"  unix) || \
-                                   !strcmp(argv[i], "--" gnu)))
+                else if(_args_inargs && \
+                          (!strcmp(argv[_args_argc_i], "-"  unix) || \
+                           !strcmp(argv[_args_argc_i], "--" gnu)))
 #define ARGEND }

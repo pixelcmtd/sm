@@ -6,9 +6,10 @@
 
 char *append_smfile(char *c)
 {
+        char *d;
 	c += strlen(c);
 	*c++ = '/';
-	char *d = c;
+	d = c;
 	*c++ = 'S';
 	*c++ = 'm';
 	*c++ = 'f';
@@ -28,8 +29,10 @@ void append_dots(char *c)
 
 #define return_null { puts(strerror(errno)); free(fn); return NULL; }
 
-// this might not be the best implementation but its the first one i
-// got to work
+/*
+ * This might not be the best implementation,
+ * but it's the first one I got to work.
+ */
 char *find_smfile()
 {
 	for(;;)
