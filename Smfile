@@ -3,6 +3,12 @@ all
         %CC sm src/*.c
 }
 
+movcc
+{
+        %SET CC movcc
+        %CC sm src/*.c
+}
+
 clean
 {
         !rm -f sm
@@ -15,6 +21,6 @@ install root (all)
 
 debug
 {
-        %SET CFLAGS -Og -Wall -pedantic -Wextra -fsanitize=address
+        %SET CFLAGS -Og -Wall -pedantic -Wextra -fsanitize=address -fsanitize=leak -fsanitize=undefined -ansi
         %CC sm src/*.c
 }

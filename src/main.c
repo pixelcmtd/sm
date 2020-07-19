@@ -5,7 +5,7 @@
 #include "args.h"
 
 #define PROGNAME "sm"
-#define VERSION  "0.0.4"
+#define VERSION  "0.0.5"
 #define YEARS    "2019-2020"
 #define AUTHORS  "Chris Häußler, chrissx Media"
 #define VERSIONINFO PROGNAME" "VERSION"\n(c) "YEARS" "AUTHORS
@@ -30,10 +30,12 @@
 
 int main(int argc, char **argv)
 {
+	char *smfile;
+        bool no_target_ran;
         MAINSTART;
-	char *smfile = find_smfile();
-        bool no_target_ran = 1;
+	smfile = find_smfile();
 	if(!smfile) { puts("*** No Smfile found. ***"); return 1; }
+        no_target_ran = 1;
         ARGSTART;
         ARG("v", "version") return  puts  (VERSIONINFO) < 0;
         ARG("h", "help")    return !printf(HELP, *argv);

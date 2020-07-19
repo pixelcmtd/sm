@@ -2,7 +2,8 @@
 
 #define MAINSTART int _args_inargs, _args_argc_i;
 
-#define ARGSTART for(_args_argc_i = 1; \
+#define ARGSTART _args_inargs = 1; \
+                 for(_args_argc_i = 1; \
                      _args_argc_i < argc; \
                      _args_argc_i++) { \
                          if(!strcmp(argv[_args_argc_i], "--")) \

@@ -37,11 +37,12 @@ char *find_smfile()
 {
 	for(;;)
 	{
-	        char *fn = (char *) malloc(PATH_MAX + 8);
-                char nd[PATH_MAX + 4];
+	        char *fn, *c, nd[PATH_MAX + 4];
+                fn = (char *) malloc(PATH_MAX + 8);
+                memset(fn, 0, PATH_MAX + 8);
 		if(!getcwd(fn, PATH_MAX)) return_null;
                 if(!fn[1]) { free(fn); return NULL; }
-		char *c = append_smfile(fn);
+		c = append_smfile(fn);
 		if(!access(fn, R_OK)) return fn;
 		*c = 's';
 		if(!access(fn, R_OK)) return fn;

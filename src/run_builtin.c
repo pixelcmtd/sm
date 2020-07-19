@@ -39,23 +39,23 @@ void check_vars()
 void CC(char *args)
 {
         int i = first_index_of(args, ' ');
+        char *output, *cmd;
         args[i] = '\0';
-        char *output = args;
+        output = args;
         args += i + 1;
-        char cmd[strlen(cc) +
-                 strlen(args) +
-                 strlen(output) +
-                 strlen(cflags) +
-                 16];
+        cmd = malloc(strlen(cc) + strlen(args) +
+                     strlen(output) + strlen(cflags) + 16);
         sprintf(cmd, "%s %s -o %s %s", cc, args, output, cflags);
         SYSTEM(cmd);
+        free(cmd);
 }
 
 void SET(char *args)
 {
         int i = first_index_of(args, ' ');
+        char *name;
         args[i] = '\0';
-        char *name = args;
+        name = args;
         args += i + 1;
         SETNAMESTART;
         SETNAME("CFLAGS", cflags)
@@ -65,10 +65,12 @@ void SET(char *args)
 
 void run_builtin(char *cmd)
 {
+        int i;
+        char *builtin;
         check_vars();
-        int i = first_index_of(cmd, ' ');
+        i = first_index_of(cmd, ' ');
         cmd[i] = '\0';
-        char *builtin = cmd;
+        builtin = cmd;
         cmd += i + 1;
         BUILTINSTART;
         BUILTIN("CC" ) CC (cmd);
