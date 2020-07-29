@@ -10,12 +10,17 @@
 
 #define NEWLINE(c) ((c) == '\r' || (c) == '\n')
 #define SON(c) ((c) == ' ' || (c) == '\t' || NEWLINE(c))
-#define READ_WHILE(b) \
-	for(c = fgetc(f); (b) && c != EOF; c = fgetc(f))
+#define CREADF c = fgetc(f)
+#define CWRITED *d++ = c
+#define READ_WHILE(b) for(CREADF; (b) && c != EOF; CREADF)
+#define COPY_WHILE(b) READ_WHILE(b) CWRITED;
+#define SKIP_WHILE(b) while(b) c = fgetc(f)
 
 #define OPTIONSTART if(0)
 #define OPTION(s) else if(!strcmp(s, bfr))
 #define OPTIONEND else printf("Omitting unknown option \"%s\".\n", bfr);
+
+#define TRETURN fclose(f); free(bfr); return
 
 int run_target(char *smfile, char *target, char *argv0)
 {
@@ -38,8 +43,8 @@ int run_target(char *smfile, char *target, char *argv0)
                 if(SON(c)) continue; /* skip whitespace */
                 /* read the target name */
 		d = bfr;
-                *d++ = c;
-		READ_WHILE(!SON(c) && c != '{' && c != '(') *d++ = c;
+                CWRITED;
+		COPY_WHILE(!SON(c) && c != '{' && c != '(');
 		*d = '\0';
 		if(strcmp(bfr, target)) /* target != this one */
                 {
@@ -53,8 +58,8 @@ int run_target(char *smfile, char *target, char *argv0)
                 {
                         if(SON(c)) continue;
                         d = bfr;
-                        *d++ = c;
-                        READ_WHILE(!SON(c) && c != '{') *d++ = c;
+                        CWRITED;
+                        COPY_WHILE(!SON(c) && c != '{');
                         *d = '\0';
                         OPTIONSTART;
                         OPTION("root") { if(getuid() != 0)
@@ -71,30 +76,29 @@ int run_target(char *smfile, char *target, char *argv0)
 deps: /* read all the dependencies and run them */
                 while(c != ')')
                 {
-                        if(SON(c) || c == ',') { c = fgetc(f); continue; }
+                        SKIP_WHILE(SON(c) || c == ',' || c == '(');
+                        if(c == ')') break;
                         d = bfr;
-                        READ_WHILE(!SON(c) && c != ',' && c != ')') *d++ = c;
+                        CWRITED;
+                        COPY_WHILE(!SON(c) && c != ',' && c != ')');
                         *d = '\0';
                         m = run_target(smfile, bfr, argv0);
-                        if(m) return m;
+                        if(m) TRETURN m;
                 }
-                READ_WHILE(c != '{');
+                SKIP_WHILE(c != '{');
 execute: /* execute the code */
                 READ_WHILE(c != '}')
                 {
-                        if(SON(c)) continue;
+                        SKIP_WHILE(SON(c));
+                        if(c == '}') break;
                         m = c;
                         d = bfr;
-                        READ_WHILE(!NEWLINE(c)) *d++ = c;
+                        COPY_WHILE(!NEWLINE(c));
                         *d = '\0';
                         run_command(m, bfr);
                 }
-                fclose(f);
-                free(bfr);
-                return 0;
+                TRETURN 0;
         }
-        fclose(f);
-        free(bfr);
         printf("Target \"%s\" not found.\n", target);
-        return 1;
+        TRETURN 1;
 }
