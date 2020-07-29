@@ -83,7 +83,7 @@ deps: /* read all the dependencies and run them */
                         COPY_WHILE(!SON(c) && c != ',' && c != ')');
                         *d = '\0';
                         m = run_target(smfile, bfr, argv0);
-                        if(m) TRETURN m;
+                        if(m) { TRETURN m; }
                 }
                 SKIP_WHILE(c != '{');
 execute: /* execute the code */
