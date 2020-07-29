@@ -17,7 +17,7 @@
 #define OPTION(s) else if(!strcmp(s, bfr))
 #define OPTIONEND else printf("Omitting unknown option \"%s\".\n", bfr);
 
-void run_target(char *smfile, char *target, char *argv0)
+int run_target(char *smfile, char *target, char *argv0)
 {
         off_t size;
         struct stat s;
@@ -27,6 +27,7 @@ void run_target(char *smfile, char *target, char *argv0)
         if(stat(smfile, &s))
         {
                 printf("Can't get file size: %s\n", strerror(errno));
+                puts("(assuming 256K)");
                 size = 256 * 1024;
         }
         else size = s.st_size;
@@ -34,10 +35,10 @@ void run_target(char *smfile, char *target, char *argv0)
 	f = fopen(smfile, "r");
 	READ_WHILE(1)
 	{
-                if(SON(c)) continue;
+                if(SON(c)) continue; /* skip whitespace */
+                /* read the target name */
 		d = bfr;
                 *d++ = c;
-                /* read the target name */
 		READ_WHILE(!SON(c) && c != '{' && c != '(') *d++ = c;
 		*d = '\0';
 		if(strcmp(bfr, target)) /* target != this one */
@@ -59,26 +60,26 @@ void run_target(char *smfile, char *target, char *argv0)
                         OPTION("root") { if(getuid() != 0)
                         {
                                 sprintf(bfr, "sudo %s %s", argv0, target);
-                                SYSTEM(bfr);
                                 fclose(f);
+                                c = system(bfr);
                                 free(bfr);
-                                return;
+                                return c;
                         } }
                         OPTIONEND;
                 }
                 if(c == '{') goto execute;
-deps:
+deps: /* read all the dependencies and run them */
                 while(c != ')')
                 {
                         if(SON(c) || c == ',') { c = fgetc(f); continue; }
                         d = bfr;
                         READ_WHILE(!SON(c) && c != ',' && c != ')') *d++ = c;
                         *d = '\0';
-                        run_target(smfile, bfr, argv0);
+                        m = run_target(smfile, bfr, argv0);
+                        if(m) return m;
                 }
                 READ_WHILE(c != '{');
-execute:
-                /* execute the code */
+execute: /* execute the code */
                 READ_WHILE(c != '}')
                 {
                         if(SON(c)) continue;
@@ -90,6 +91,10 @@ execute:
                 }
                 fclose(f);
                 free(bfr);
-                return;
-	}
+                return 0;
+        }
+        fclose(f);
+        free(bfr);
+        printf("Target \"%s\" not found.\n", target);
+        return 1;
 }
