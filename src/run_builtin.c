@@ -9,10 +9,10 @@
 #define BUILTINEND else printf("Omitting unrecognized builtin \"%s\".\n", builtin)
 
 #define _SET(var, val) { \
-                              if(var) free(var); \
-                              var = (char *) malloc(strlen(val) + 2); \
-                              strcpy(var, val); \
-                      }
+        if(var) free(var); \
+        var = (char *) malloc(strlen(val) + 2); \
+        strcpy(var, val); \
+}
 #define SETNAMESTART    if(0)
 #define SETNAME(s, var) else if(!strcmp(name, s)) _SET(var, args)
 #define SETNAMEEND      else printf("Not setting unrecognized variable \"%s\".\n", name)
@@ -28,7 +28,7 @@ int first_index_of(char *s, char c)
 
 char *cc = NULL, *cflags = NULL;
 #define DEFAULT_CC     "gcc"
-#define DEFAULT_CFLAGS "-O2 -s"
+#define DEFAULT_CFLAGS "-Wall -Wextra -O2 -s"
 
 void check_vars()
 {

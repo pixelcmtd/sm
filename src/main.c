@@ -5,7 +5,7 @@
 #include "args.h"
 
 #define PROGNAME "sm"
-#define VERSION  "0.0.8"
+#define VERSION  "0.0.9"
 #define YEARS    "2019-2020"
 #define AUTHORS  "Chris Häußler, chrissx Media"
 #define VERSIONINFO PROGNAME" "VERSION"\n(c) "YEARS" "AUTHORS
@@ -26,7 +26,7 @@
 "    Print this screen.\n" \
 "\n"
 
-#define STRARRSZ(arr) sizeof(arr) / sizeof(char *)
+#define main_return { free(smfile); return res; }
 
 int main(int argc, char **argv)
 {
@@ -44,10 +44,9 @@ int main(int argc, char **argv)
         {
                 no_target_ran = 0;
                 res = run_target(smfile, argv[_args_argc_i], *argv);
-                if(res) { free(smfile); return res; }
+                if(res) main_return;
         }
         ARGEND;
         if(no_target_ran) res = run_target(smfile, "all", *argv);
-        free(smfile);
-        return res;
+        main_return;
 }
