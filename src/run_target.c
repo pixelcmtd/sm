@@ -8,6 +8,10 @@
 #include "run_command.h"
 #include "system.h"
 
+#ifdef _WIN32
+#define getuid() 0
+#endif
+
 #define NEWLINE(c) ((c) == '\r' || (c) == '\n')
 #define SON(c) ((c) == ' ' || (c) == '\t' || NEWLINE(c))
 #define CREADF c = fgetc(f)

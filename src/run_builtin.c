@@ -27,8 +27,13 @@ int first_index_of(char *s, char c)
 }
 
 char *cc = NULL, *cflags = NULL;
+#ifdef _WIN32
+#define DEFAULT_CC     "cl"
+#define DEFAULT_CFLAGS "/c"
+#else
 #define DEFAULT_CC     "gcc"
 #define DEFAULT_CFLAGS "-Wall -Wextra -O2 -s"
+#endif
 
 void check_vars()
 {
@@ -45,7 +50,12 @@ void CC(char *args)
         args += i + 1;
         cmd = malloc(strlen(cc) + strlen(args) +
                      strlen(output) + strlen(cflags) + 16);
+        #ifdef _WIN32
+        //TODO: dynamic extensions with .so .dll .exe appended when needed
+        sprintf(cmd, "%s %s %s & link /OUT:%s.exe *.obj", cc, cflags, args, output);
+        #else
         sprintf(cmd, "%s %s -o %s %s", cc, args, output, cflags);
+        #endif
         SYSTEM(cmd);
         free(cmd);
 }
