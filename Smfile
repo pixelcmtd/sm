@@ -5,6 +5,7 @@ all
 
 movcc
 {
+        # this will probably never work on windows
         %SET CC movcc
         %CC sm src/*.c
 }
@@ -21,6 +22,6 @@ install root (all)
 
 debug
 {
-        %SET CFLAGS -Og -Wall -pedantic -Wextra -fsanitize=address -fsanitize=leak -fsanitize=undefined -ansi
+        %APPEND CFLAGS -Og -fsanitize=address -fsanitize=leak -fsanitize=undefined
         %CC sm src/*.c
 }

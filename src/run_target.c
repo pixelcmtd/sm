@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -9,7 +8,10 @@
 #include "system.h"
 
 #ifdef _WIN32
-#define getuid() 0
+#define noroot() 0
+#else
+#include <unistd.h>
+#define noroot getuid
 #endif
 
 #define NEWLINE(c) ((c) == '\r' || (c) == '\n')
@@ -66,7 +68,7 @@ int run_target(char *smfile, char *target, char *argv0)
                         COPY_WHILE(!SON(c) && c != '{');
                         *d = '\0';
                         OPTIONSTART;
-                        OPTION("root") { if(getuid() != 0)
+                        OPTION("root") { if(noroot())
                         {
                                 sprintf(bfr, "sudo %s %s", argv0, target);
                                 fclose(f);

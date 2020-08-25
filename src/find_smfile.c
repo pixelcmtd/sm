@@ -32,6 +32,7 @@ void append_dots(char *c)
 /*
  * This might not be the best implementation,
  * but it's the first one I got to work.
+ * TODO: fix
  */
 char *find_smfile()
 {

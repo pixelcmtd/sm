@@ -17,6 +17,21 @@
 #define SETNAME(s, var) else if(!strcmp(name, s)) _SET(var, args)
 #define SETNAMEEND      else printf("Not setting unrecognized variable \"%s\".\n", name)
 
+#define _APPEND(var, val) {\
+        if(!var) {\
+                var = (char *) malloc(strlen(val) + 2); \
+                strcpy(var, val); \
+        } else {\
+                char *tmpvar = (char *) malloc(strlen(val) + strlen(var) + 2);\
+                sprintf(tmpvar, "%s %s", var, val); \
+                free(var); \
+                var = tmpvar; \
+        }\
+}
+#define APPENDNAMESTART    if(0)
+#define APPENDNAME(s, var) else if(!strcmp(name, s)) _APPEND(var, args)
+#define APPENDNAMEEND      else printf("Not appending to unrecognized variable \"%s\".\n", name)
+
 int first_index_of(char *s, char c)
 {
         int i;
@@ -32,7 +47,7 @@ char *cc = NULL, *cflags = NULL;
 #define DEFAULT_CFLAGS "/c"
 #else
 #define DEFAULT_CC     "gcc"
-#define DEFAULT_CFLAGS "-Wall -Wextra -O2 -s"
+#define DEFAULT_CFLAGS "-Wall -Wextra -pedantic -ansi -O2 -s"
 #endif
 
 void check_vars()
@@ -51,7 +66,12 @@ void CC(char *args)
         cmd = malloc(strlen(cc) + strlen(args) +
                      strlen(output) + strlen(cflags) + 16);
         #ifdef _WIN32
-        //TODO: dynamic extensions with .so .dll .exe appended when needed
+        /*
+         * TODO: append dynamic extensions like so dll exe when needed
+         * TODO: only using separate compiling and linking on windows
+         *       is not the best idea, for stupid reasons some unix
+         *       users might also want to do that
+         */
         sprintf(cmd, "%s %s %s & link /OUT:%s.exe *.obj", cc, cflags, args, output);
         #else
         sprintf(cmd, "%s %s -o %s %s", cc, args, output, cflags);
@@ -73,6 +93,19 @@ void SET(char *args)
         SETNAMEEND;
 }
 
+void APPEND(char *args)
+{
+        int i = first_index_of(args, ' ');
+        char *name;
+        args[i] = '\0';
+        name = args;
+        args += i + 1;
+        APPENDNAMESTART;
+        APPENDNAME("CFLAGS", cflags)
+        APPENDNAME("CC", cc)
+        APPENDNAMEEND;
+}
+
 void run_builtin(char *cmd)
 {
         int i;
@@ -83,7 +116,8 @@ void run_builtin(char *cmd)
         builtin = cmd;
         cmd += i + 1;
         BUILTINSTART;
-        BUILTIN("CC" ) CC (cmd);
-        BUILTIN("SET") SET(cmd);
+        BUILTIN("CC")     CC    (cmd);
+        BUILTIN("SET")    SET   (cmd);
+        BUILTIN("APPEND") APPEND(cmd);
         BUILTINEND;
 }
