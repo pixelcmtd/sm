@@ -5,10 +5,10 @@
 #include "args.h"
 
 #define PROGNAME "sm"
-#define VERSION  "0.0.11"
+#define VERSION  "0.0.12"
 #define YEARS    "2019-2020"
 #define AUTHORS  "Chris Häußler, chrissx Media"
-#define VERSIONINFO PROGNAME" "VERSION"\n(c) "YEARS" "AUTHORS
+#define VERSIONINFO PROGNAME " " VERSION "\n(c) " YEARS " " AUTHORS
 
 #define HELP VERSIONINFO"\n" \
 "\n" \
@@ -47,6 +47,6 @@ int main(int argc, char **argv)
                 if(res) main_return;
         }
         ARGEND;
-        if(no_target_ran) res = run_target(smfile, "all", *argv);
+        if(no_target_ran) res = run_target(smfile, (char *) "all", *argv);
         main_return;
 }

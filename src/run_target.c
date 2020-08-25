@@ -42,7 +42,7 @@ int run_target(char *smfile, char *target, char *argv0)
                 size = 256 * 1024;
         }
         else size = s.st_size;
-	bfr = malloc(size + strlen(target) + strlen(argv0));
+	bfr = (char *) malloc(size + strlen(target) + strlen(argv0));
 	f = fopen(smfile, "r");
 	READ_WHILE(1)
 	{

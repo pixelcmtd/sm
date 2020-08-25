@@ -41,19 +41,25 @@ int first_index_of(char *s, char c)
         return -1;
 }
 
-char *cc = NULL, *cflags = NULL;
+char *cc = NULL, *cflags = NULL, *cppc = NULL, *cppflags = NULL;
 #ifdef _WIN32
-#define DEFAULT_CC     "cl"
-#define DEFAULT_CFLAGS "/c"
+#define DEFAULT_CC       "cl"
+#define DEFAULT_CFLAGS   "/c"
+#define DEFAULT_CPPC     "cl"
+#define DEFAULT_CPPFLAGS "/c"
 #else
-#define DEFAULT_CC     "gcc"
-#define DEFAULT_CFLAGS "-Wall -Wextra -pedantic -ansi -O2 -s"
+#define DEFAULT_CC       "gcc"
+#define DEFAULT_CFLAGS   "-Wall -Wextra -pedantic -ansi -O2 -s"
+#define DEFAULT_CPPC     "g++"
+#define DEFAULT_CPPFLAGS "-Wall -Wextra -pedantic -std=c++2a -O2 -s"
 #endif
 
 void check_vars()
 {
-        if(!cc)     _SET(cc,     DEFAULT_CC);
-        if(!cflags) _SET(cflags, DEFAULT_CFLAGS);
+        if(!cc)       _SET(cc,       DEFAULT_CC);
+        if(!cppc)     _SET(cppc,     DEFAULT_CPPC);
+        if(!cflags)   _SET(cflags,   DEFAULT_CFLAGS);
+        if(!cppflags) _SET(cppflags, DEFAULT_CPPFLAGS);
 }
 
 void CC(char *args)
@@ -63,8 +69,8 @@ void CC(char *args)
         args[i] = '\0';
         output = args;
         args += i + 1;
-        cmd = malloc(strlen(cc) + strlen(args) +
-                     strlen(output) + strlen(cflags) + 16);
+        cmd = (char *) malloc(strlen(cc) + strlen(args) +
+                              strlen(output) + strlen(cflags) + 16);
         #ifdef _WIN32
         /*
          * TODO: append dynamic extensions like so dll exe when needed
@@ -80,6 +86,30 @@ void CC(char *args)
         free(cmd);
 }
 
+/*
+ * TODO: make this more generic
+ */
+void CPPC(char *args)
+{
+        int i = first_index_of(args, ' ');
+        char *output, *cmd;
+        args[i] = '\0';
+        output = args;
+        args += i + 1;
+        cmd = (char *) malloc(strlen(cppc) + strlen(args) +
+                              strlen(output) + strlen(cppflags) + 16);
+        #ifdef _WIN32
+        /*
+         * TODO: check if this actually works
+         */
+        sprintf(cmd, "%s %s %s & link /OUT:%s.exe *.obj", cppc, cppflags, args, output);
+        #else
+        sprintf(cmd, "%s %s -o %s %s", cppc, args, output, cppflags);
+        #endif
+        SYSTEM(cmd);
+        free(cmd);
+}
+
 void SET(char *args)
 {
         int i = first_index_of(args, ' ');
@@ -90,6 +120,8 @@ void SET(char *args)
         SETNAMESTART;
         SETNAME("CFLAGS", cflags)
         SETNAME("CC", cc)
+        SETNAME("CPPFLAGS", cppflags)
+        SETNAME("CPPC", cppc)
         SETNAMEEND;
 }
 
@@ -103,6 +135,8 @@ void APPEND(char *args)
         APPENDNAMESTART;
         APPENDNAME("CFLAGS", cflags)
         APPENDNAME("CC", cc)
+        APPENDNAME("CPPFLAGS", cppflags)
+        APPENDNAME("CPPC", cppc)
         APPENDNAMEEND;
 }
 
@@ -117,6 +151,7 @@ void run_builtin(char *cmd)
         cmd += i + 1;
         BUILTINSTART;
         BUILTIN("CC")     CC    (cmd);
+        BUILTIN("CPPC")   CPPC  (cmd);
         BUILTIN("SET")    SET   (cmd);
         BUILTIN("APPEND") APPEND(cmd);
         BUILTINEND;
