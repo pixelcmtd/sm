@@ -3,6 +3,11 @@ all
         %CC sm src/*.c
 }
 
+cpp
+{
+        %CPPC sm src/*.c
+}
+
 movcc
 {
         # this will probably never work on windows
