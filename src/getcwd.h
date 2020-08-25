@@ -13,6 +13,7 @@
 #include <Windows.h>
 #define PATH_MAX MAX_PATH
 #define R_OK 4
+#define getcwd(bfr) _getcwd(bfr, MAX_PATH)
 #else
 #error "Your OS is currently unsupported, you will have to specify "\
        "a header for getcwd and PATH_MAX yourself. If this piece of "\
