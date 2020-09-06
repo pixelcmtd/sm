@@ -49,7 +49,7 @@ char *cc = NULL, *cflags = NULL, *cppc = NULL, *cppflags = NULL;
 #define DEFAULT_CPPFLAGS "/c"
 #else
 #define DEFAULT_CC       "gcc"
-#define DEFAULT_CFLAGS   "-Wall -Wextra -pedantic -ansi -O2 -s"
+#define DEFAULT_CFLAGS   "-Wall -Wextra -pedantic -O2 -s"
 #define DEFAULT_CPPC     "g++"
 #define DEFAULT_CPPFLAGS "-Wall -Wextra -pedantic -std=c++2a -O2 -s"
 #endif
@@ -76,7 +76,8 @@ void CC(char *args)
          * TODO: append dynamic extensions like so dll exe when needed
          * TODO: only using separate compiling and linking on windows
          *       is not the best idea, for stupid reasons some unix
-         *       users might also want to do that
+         *       users might also want to do that (actually now that i
+         *       am building an os i know good reasons to do that)
          */
         sprintf(cmd, "%s %s %s & link /OUT:%s.exe *.obj", cc, cflags, args, output);
         #else
